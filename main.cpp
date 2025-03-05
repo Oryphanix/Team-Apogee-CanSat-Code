@@ -9,6 +9,7 @@ const int BYTES_PER_ENTRY = 6;
 const int MAX_ENTRIES = EEPROM_SIZE / BYTES_PER_ENTRY;
 
 int entryCount = 0;
+
 void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
@@ -62,3 +63,4 @@ void loop()
 }
   
   
+
