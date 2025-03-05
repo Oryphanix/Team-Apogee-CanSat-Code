@@ -8,6 +8,10 @@ const int EEPROM_SIZE = 1024;
 const int BYTES_PER_ENTRY = 6;
 const int MAX_ENTRIES = EEPROM_SIZE / BYTES_PER_ENTRY;
 
+const float ALTITUDE_THRESHOLD = 10.0; 
+bool isRecording = false;
+float groundAltitude = 0;
+
 int entryCount = 0;
 
 void setup()
@@ -25,9 +29,41 @@ void setup()
                   Adafruit_BMP280::SAMPLING_X16,    
                   Adafruit_BMP280::FILTER_X16,     
                   Adafruit_BMP280::STANDBY_MS_500); 
+    Serial.print("calibrating")
+    groundAltitude = 0;
+    for (int i = 0; i < 5; i++) {
+    groundAltitude += bmp.readAltitude(1013.25);
+    delay(100);
+    }
+    groundAltitude /= 5;
+    Serial.print("calibrated to with max height of:")
+    Serial.print(groundAltitude)
+    Serial.print(ALTITUDE_THRESHOLD)
+
 }
 void loop()
 {
+    float currentAltitude = bmp.readAltitude(1013.25);
+    float relativeAltitude = currentAltitude - groundAltitude;
+
+    if (!isRecording) {
+   
+    Serial.print("currently at:");
+    Serial.print(relativeAltitude);
+    Serial.print("===================")
+
+    if (relativeAltitude >= ALTITUDE_THRESHOLD) {
+      isRecording = true;
+      Serial.println("threshold reached, recording");
+    }
+    
+    delay(1000);
+    return; 
+  }
+
+
+
+
     if (entryCount >= MAX_ENTRIES) {
     Serial.println("max");
     while (1); 
